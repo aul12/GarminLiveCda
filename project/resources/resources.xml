@@ -1,0 +1,4 @@
+<resources>
+	<string id="AppName">Packman</string>
+	<bitmap id="LauncherIcon" filename="test.png" />
+</resources>
