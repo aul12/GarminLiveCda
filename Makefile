@@ -26,6 +26,8 @@ container-attach:
 container-clean:
 	rm -rf $(BIND_DIR)
 
+simulator:
+	$(DOCKER) run --rm -it $(DOCKER_ARGS) --name $(CONTAINER_NAME) $(IMAGE_NAME) /entrypoint.sh connectiq
 
 DEVICE=edge130
 
