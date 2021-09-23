@@ -4,11 +4,10 @@
 
 		<iq:products>
 			<iq:product id="edge130"/>
+			<iq:product id="fr735xt"/>
 		</iq:products>
 
 		<iq:permissions>
-			<iq:uses-permission id="Background"/>
-			<iq:uses-permission id="Communications"/>
 		</iq:permissions>
 
 	</iq:application>

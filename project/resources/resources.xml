@@ -1,4 +1,4 @@
 <resources>
-	<string id="AppName">Packman</string>
+	<string id="AppName">CdaMeter</string>
 	<bitmap id="LauncherIcon" filename="test.png" />
 </resources>
