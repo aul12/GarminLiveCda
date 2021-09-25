@@ -14,35 +14,26 @@ Speed and Altitude can be measured
  */
 
 
+using Toybox.System;
+
 class SpeedAltitudeFilter {
-    private var lastSpeed = null;
-    private var lastAlt = null;
-    private var speedWeight = 0.0;
-    private var altitudeWeight = 0.0;
+    private var speedFilter, altFilter;
 
     function initialize(speedWeight, altitudeWeight) {
-        self.speedWeight = speedWeight;
-        self.altitudeWeight = altitudeWeight;
+        self.speedFilter = new ExponentialSmoothing(speedWeight);
+        self.altFilter = new ExponentialSmoothing(altitudeWeight);
     }
 
     function update(speed, altitude) {
-        if (lastSpeed != null) {
-            lastSpeed = speedWeight * lastSpeed + (1-speedWeight) * speed;
-        } else {
-            lastSpeed = speed;
-        }
-        if (lastAlt != null) {
-            lastAlt = altitudeWeight * lastAlt + (1-altitudeWeight) * altitude;
-        } else {
-            lastAlt = altitude;
-        }
+        speedFilter.update(speed);
+        altFilter.update(altitude);
     }
 
     function getSpeed() {
-        return lastSpeed;
+        return speedFilter.get();
     }
 
     function getAltitude() {
-        return lastAlt;
+        return altFilter.get();
     }
 }
