@@ -1,23 +1,25 @@
 using Toybox.Application;
 using Toybox.WatchUi;
 using Toybox.System;
-
+using Toybox.Sensor;
 
 class CdaView extends WatchUi.SimpleDataField
 {
     private var cdaCalc = new CdaCalc();
-    function initialize() {
-        System.println( "initialize()" );
+    private var temperature = 20+273;
+
+    function submitTemp(temp) {
+        temperature = temp;
     }
 
     function compute(info) {
         var time = 0;
         if (info has :timerTime && info.timerTime != null) {
-            time = info.timerTime;
+            time = info.timerTime / 1000;
         } else {
             System.println("Time missing");
         }
-        
+
         var power = 0;
         if (info has :currentPower && info.currentPower != null) {
             power = info.currentPower;
@@ -46,16 +48,24 @@ class CdaView extends WatchUi.SimpleDataField
             System.println("Distance missing");
         }
 
+        var pressure = 101325;
+        if (info has :ambientPressure && info.ambientPressure != null) {
+            pressure = info.ambientPressure;
+        } else {
+            System.println("Pressure missing");
+        }
 
-        return cdaCalc.update(time, power, altitude, speed, distance);
+        return cdaCalc.update(time, power, altitude, speed, distance, pressure, temperature);
     }
 }
 
 class Main extends Application.AppBase
 {
+    private var cdaView = new CdaView();
+
     function getInitialView() {
         System.println( "getInitialView()" );
 
-        return [new CdaView()];
+        return [cdaView];
     }
 }

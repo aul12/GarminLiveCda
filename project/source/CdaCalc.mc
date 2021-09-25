@@ -4,36 +4,52 @@ class CdaCalc {
     private var lastTime = 0;
     private var lastAltitude = 0;
     private var lastSpeed = 0;
+    private var lastDistance = 0;
+    private var cda;
 
     private const G = 9.81;
-    private const M = 60;
+    private const M = 60 + 10;
+    private const CRR = 0.002845;
+    private const R_specific = 287.058; // https://en.wikipedia.org/wiki/Density_of_air
+
+    private var speedAltitudeFilter = new SpeedAltitudeFilter(0.9, 0.9);
 
     function initialize() {
     }
 
-    function update(time, power, altitude, speed, distance) {
+    function update(time, power, altitude, speed, distance, pressure, temperature) {
+        speedAltitudeFilter.update(speed, altitude);
+        speed = speedAltitudeFilter.getSpeed();
+        altitude = speedAltitudeFilter.getAltitude();
+
         var dt = time - lastTime;
         var energyIn = power * dt;
         var potentialEnergy = M * G * (altitude - lastAltitude);
-        var kineticEnergy = 0.5 * M * speed * speed - 0.5 * M - lastSpeed * lastSpeed;
-        var rollLossEnergy = distance * 0; // TODO
+        var kineticEnergy = (0.5 * M * speed * speed) - (0.5 * M * lastSpeed * lastSpeed);
+        var dDistance = distance - lastDistance;
+        var rollForce = CRR * M * G;
+        var rollLossEnergy = dDistance * rollForce;
         var dragEnergy = energyIn - potentialEnergy - kineticEnergy - rollLossEnergy;
-        var cda = 0;
 
-        if (speed != 0 && distance != 0) {
-            var dragForce = dragEnergy / distance;
-            var rho_air = 1;
+        System.println("Energy in: " + energyIn + " (power = " + power + ")");
+        System.println("Potential in: " + potentialEnergy + " (deltaAltitude=" + (altitude-lastAltitude) + ")");
+        System.println("Kinetic in: " + kineticEnergy + " (deltaSpeed=" + (speed - lastSpeed) + ")");
+        System.println("Roll loss: " + rollLossEnergy);
+
+        if (speed != 0 && dDistance != 0) {
+            var dragForce = dragEnergy / dDistance;
+            var rho_air = pressure / (R_specific * temperature);
             cda = 2 * dragForce / (rho_air * speed * speed);
-            System.println(cda);
+            System.println("cda: " + cda);
         } else {
             System.println("Skipping calculations as standing");
         }
-    
 
 
         lastTime = time;
         lastAltitude = altitude;
         lastSpeed = speed;
+        lastDistance = distance;
 
         return cda;
     }
