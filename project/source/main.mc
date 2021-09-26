@@ -3,10 +3,15 @@ using Toybox.WatchUi;
 using Toybox.System;
 using Toybox.Sensor;
 
-class CdaView extends WatchUi.SimpleDataField
+class LiveCdaView extends WatchUi.SimpleDataField
 {
-    private var cdaCalc = new CdaCalc();
+    private var cdaCalc;
     private var temperature = 20+273;
+
+    function initialize(cdaCalc) {
+        self.cdaCalc = cdaCalc;
+        self.label = "Cda";
+    }
 
     function submitTemp(temp) {
         temperature = temp;
@@ -48,9 +53,11 @@ class CdaView extends WatchUi.SimpleDataField
             System.println("Distance missing");
         }
 
-        var pressure = 101325;
+        var pressure = 101325; // @TODO raw pressure or altitude compensation
         if (info has :ambientPressure && info.ambientPressure != null) {
             pressure = info.ambientPressure;
+        } else if (info has :rawAmbientPressure && info.rawAmbientPressure != null) {
+            pressure = info.rawAmbientPressure;
         } else {
             System.println("Pressure missing");
         }
@@ -59,13 +66,28 @@ class CdaView extends WatchUi.SimpleDataField
     }
 }
 
+class CdaAverage extends WatchUi.SimpleDataField {
+    private var cdaCalc;
+    private var cdaSum = 0, count = 0;
+
+    function initialize(cdaCalc) {
+        self.cdaCalc = cdaCalc;
+    }
+
+    function compute(info) {
+        cdaSum += cdaCalc.getCda();
+        return cdaSum / count;
+    }
+
+}
+
 class Main extends Application.AppBase
 {
-    private var cdaView = new CdaView();
+    private var cdaCalc = new CdaCalc();
+    private var liveCdaView = new LiveCdaView(cdaCalc);
+    private var cdaAverage = new CdaAverage(cdaCalc);
 
     function getInitialView() {
-        System.println( "getInitialView()" );
-
-        return [cdaView];
+        return [liveCdaView];
     }
 }

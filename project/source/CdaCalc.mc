@@ -11,18 +11,19 @@ class CdaCalc {
     private const CRR = 0.002845;
     private const R_specific = 287.058; // https://en.wikipedia.org/wiki/Density_of_air
 
-    private var speedAltitudeFilter = new SpeedAltitudeFilter(0.7, 0.7);
-    private var cdaFilter = new ExponentialSmoothing(0.5);
+    private var speedAltitudeFilter = new SpeedAltitudeFilter(0.001, 0.001, 1, 1);
+    private var cdaFilter = new ExponentialSmoothing(0.0);
 
     function initialize() {
     }
 
     function update(time, power, altitude, speed, distance, pressure, temperature) {
-        speedAltitudeFilter.update(speed, altitude);
+        var dt = time - lastTime;
+
+        speedAltitudeFilter.update(speed, altitude, dt);
         speed = speedAltitudeFilter.getSpeed();
         altitude = speedAltitudeFilter.getAltitude();
 
-        var dt = time - lastTime;
         var energyIn = power * dt;
         var potentialEnergy = M * G * (altitude - lastAltitude);
         var kineticEnergy = (0.5 * M * speed * speed) - (0.5 * M * lastSpeed * lastSpeed);
@@ -52,6 +53,10 @@ class CdaCalc {
         lastSpeed = speed;
         lastDistance = distance;
 
+        return cdaFilter.get();
+    }
+
+    function getCda() {
         return cdaFilter.get();
     }
 }
