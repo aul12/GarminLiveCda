@@ -7,7 +7,7 @@ State vector:
 Prediction model:
     speed^+ = speed + acc *dt
     acc^+ = acc
-    altitude^+ = altitde + (speed * dt + 0.5 * acc * dt^2) * gradient
+    altitude^+ = altitude + (speed * dt + 0.5 * acc * dt^2) * gradient
     gradient^+ = gradient
 
 Linearized dynamic
@@ -83,7 +83,12 @@ class SpeedAltitudeFilter {
         z.setVals([measSpeed, measAltitude]);
 
         // Prediction
-        x = mm(A, x);
+        x.setVals([
+            speed + acc *dt,
+            acc,
+            altitude + (speed * dt + 0.5 * acc * dt*dt) * gradient,
+            gradient
+        ]);
         P = add(mm(mm(A, P), A.transposed()), Q);
 
         var z_hat = mm(C, x);

@@ -62,7 +62,11 @@ class LiveCdaView extends WatchUi.SimpleDataField
             System.println("Pressure missing");
         }
 
-        return cdaCalc.update(time, power, altitude, speed, distance, pressure, temperature);
+        if (time != 0) {
+            return cdaCalc.update(time, power, altitude, speed, distance, pressure, temperature);
+        } else {
+            return 0;
+        }
     }
 }
 

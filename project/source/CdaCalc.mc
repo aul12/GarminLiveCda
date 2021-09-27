@@ -1,24 +1,34 @@
 using Toybox.System;
 
 class CdaCalc {
-    private var lastTime = 0;
-    private var lastAltitude = 0;
-    private var lastSpeed = 0;
-    private var lastDistance = 0;
+    private var lastTime = null;
+    private var lastAltitude = null;
+    private var lastSpeed = null;
+    private var lastDistance = null;
 
     private const G = 9.81;
     private const M = 60 + 10;
     private const CRR = 0.002845;
     private const R_specific = 287.058; // https://en.wikipedia.org/wiki/Density_of_air
 
-    private var speedAltitudeFilter = new SpeedAltitudeFilter(0.001, 0.001, 1, 1);
-    private var cdaFilter = new ExponentialSmoothing(0.0);
+    private var speedAltitudeFilter = new SpeedAltitudeFilter(0.0001, 0.00005, 1, 1);
+    private var cdaFilter = new ExponentialSmoothing(0.7);
 
     function initialize() {
     }
 
     function update(time, power, altitude, speed, distance, pressure, temperature) {
+        if (lastTime == null) {
+            lastTime = time;
+            lastAltitude = altitude;
+            lastSpeed = speed;
+            lastDistance = distance;
+        }
+
         var dt = time - lastTime;
+        if (dt <= 0) {
+            return cdaFilter.get();
+        }
 
         speedAltitudeFilter.update(speed, altitude, dt);
         speed = speedAltitudeFilter.getSpeed();
