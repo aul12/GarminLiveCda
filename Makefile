@@ -31,15 +31,18 @@ container-clean:
 	rm -rf $(BIND_DIR)
 
 simulator:
-	$(DOCKER) run --rm -it $(DOCKER_ARGS) --name $(CONTAINER_NAME) $(IMAGE_NAME) /entrypoint.sh connectiq
+	screen -dm $(DOCKER) run --rm -it $(DOCKER_ARGS) --name $(CONTAINER_NAME) $(IMAGE_NAME) /entrypoint.sh connectiq
 
 
 %.der:
 	openssl genrsa -out $*.pem 4096
 	openssl pkcs8 -topk8 -inform PEM -outform DER -in $*.pem -out $*.der -nocrypt
 
-%.prg: %.jungle %.der project/source/*
+%.prg: %.jungle %.der project/*
 	$(RUN_IN_CONTAINER) monkeyc -d $(DEVICE) -f $< -o $@ -y $*.der
+
+%.iq: %.jungle %.der project/*
+	$(RUN_IN_CONTAINER) monkeyc --package-app -d $(DEVICE) -f $< -o $@ -y $*.der
 
 %: %.prg
 	$(RUN_IN_CONTAINER) monkeydo $< $(DEVICE)

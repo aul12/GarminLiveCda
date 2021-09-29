@@ -7,14 +7,16 @@ class CdaCalc {
     private var lastDistance = null;
 
     private const G = 9.81;
-    private const M = 60 + 10;
-    private const CRR = 0.002845;
+    private var M;
+    private var CRR;
     private const R_specific = 287.058; // https://en.wikipedia.org/wiki/Density_of_air
 
     private var speedAltitudeFilter = new SpeedAltitudeFilter(0.0001, 0.00005, 1, 1);
     private var cdaFilter = new ExponentialSmoothing(0.9);
 
-    function initialize() {
+    function initialize(CRR, M) {
+        self.CRR = CRR;
+        self.M = M;
     }
 
     function update(time, power, altitude, groundSpeed, airSpeed, distance, pressure, temperature) {

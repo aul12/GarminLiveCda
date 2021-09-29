@@ -6,7 +6,7 @@ using Toybox.FitContributor;
 
 class LiveCdaView extends WatchUi.SimpleDataField
 {
-    private var cdaCalc = new CdaCalc();
+    private var cdaCalc;
     private var env = new EnvironmentCollector();
     var cdaField = null;
 
@@ -20,6 +20,9 @@ class LiveCdaView extends WatchUi.SimpleDataField
             FitContributor.DATA_TYPE_FLOAT,
             {:mesgType=>FitContributor.MESG_TYPE_RECORD, :units=>"m^2"}
         );
+
+        var app = Application.getApp();
+        cdaCalc = new CdaCalc(app.getProperty("crr"), app.getProperty("mass"));
     }
 
     function compute(info) {
@@ -48,6 +51,12 @@ class LiveCdaView extends WatchUi.SimpleDataField
 
 class Main extends Application.AppBase
 {
+    function initialize() {
+        var app = Application.getApp();
+        //app.setProperty("crr",  0.002845);
+        //app.setProperty("mass",  60+10);
+
+    }
     function getInitialView() {
         return [new LiveCdaView()];
     }
