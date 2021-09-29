@@ -101,8 +101,8 @@ class SpeedAltitudeFilter {
         x = add(x, mm(K, tilde_z));
         P = add(P, mm(K, mm(S, K.transposed())).scaled(-1));
 
-        System.println("z=["+z.at(0,0)+", "+z.at(1, 0)+"]");
-        System.println("x=["+x.at(0, 0)+", "+x.at(1, 0)+", "+x.at(2, 0)+", "+x.at(3, 0)+"]");
+        //System.println("z=["+z.at(0,0)+", "+z.at(1, 0)+"]");
+        //System.println("x=["+x.at(0, 0)+", "+x.at(1, 0)+", "+x.at(2, 0)+", "+x.at(3, 0)+"]");
     }
 
     function getSpeed() {

@@ -3,7 +3,7 @@ using Toybox.System;
 class CdaCalc {
     private var lastTime = null;
     private var lastAltitude = null;
-    private var lastSpeed = null;
+    private var lastGroundSpeed = null;
     private var lastDistance = null;
 
     private const G = 9.81;
@@ -12,16 +12,16 @@ class CdaCalc {
     private const R_specific = 287.058; // https://en.wikipedia.org/wiki/Density_of_air
 
     private var speedAltitudeFilter = new SpeedAltitudeFilter(0.0001, 0.00005, 1, 1);
-    private var cdaFilter = new ExponentialSmoothing(0.7);
+    private var cdaFilter = new ExponentialSmoothing(0.9);
 
     function initialize() {
     }
 
-    function update(time, power, altitude, speed, distance, pressure, temperature) {
+    function update(time, power, altitude, groundSpeed, airSpeed, distance, pressure, temperature) {
         if (lastTime == null) {
             lastTime = time;
             lastAltitude = altitude;
-            lastSpeed = speed;
+            lastGroundSpeed = groundSpeed;
             lastDistance = distance;
         }
 
@@ -30,13 +30,13 @@ class CdaCalc {
             return cdaFilter.get();
         }
 
-        speedAltitudeFilter.update(speed, altitude, dt);
-        speed = speedAltitudeFilter.getSpeed();
+        speedAltitudeFilter.update(groundSpeed, altitude, dt);
+        groundSpeed = speedAltitudeFilter.getSpeed();
         altitude = speedAltitudeFilter.getAltitude();
 
         var energyIn = power * dt;
         var potentialEnergy = M * G * (altitude - lastAltitude);
-        var kineticEnergy = (0.5 * M * speed * speed) - (0.5 * M * lastSpeed * lastSpeed);
+        var kineticEnergy = 0.5 * M * (groundSpeed * groundSpeed - lastGroundSpeed * lastGroundSpeed);
         var dDistance = distance - lastDistance;
         var rollForce = CRR * M * G;
         var rollLossEnergy = dDistance * rollForce;
@@ -47,12 +47,16 @@ class CdaCalc {
         //System.println("Kinetic in: " + kineticEnergy + " (deltaSpeed=" + (speed - lastSpeed) + ")");
         //System.println("Roll loss: " + rollLossEnergy);
 
-        if (speed != 0 && dDistance != 0) {
+        if (groundSpeed != 0 && dDistance != 0) {
             var dragForce = dragEnergy / dDistance;
             var rho_air = pressure / (R_specific * temperature);
-            var cda = 2 * dragForce / (rho_air * speed * speed);
+            var cda = 2 * dragForce / (rho_air * airSpeed * airSpeed);
             System.println("cda: " + cda);
-            cdaFilter.update(cda);
+            if (cda > 0) {
+                cdaFilter.update(cda);
+            } else {
+                System.println("CdA negative, ignoring!");
+            }
         } else {
             System.println("Skipping calculations as standing");
         }
@@ -60,7 +64,7 @@ class CdaCalc {
 
         lastTime = time;
         lastAltitude = altitude;
-        lastSpeed = speed;
+        lastGroundSpeed = groundSpeed;
         lastDistance = distance;
 
         return cdaFilter.get();

@@ -11,6 +11,8 @@ RUN_IN_CONTAINER=$(DOCKER) exec $(CONTAINER_NAME) /entrypoint.sh
 
 .SECONDARY:
 
+all: project/CdaMeter
+
 container-build:
 	$(DOCKER) build -t $(IMAGE_NAME) .
 	mkdir -p $(BIND_DIR)
