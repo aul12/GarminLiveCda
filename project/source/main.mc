@@ -25,8 +25,9 @@ class LiveCdaView extends WatchUi.SimpleDataField
     function compute(info) {
         env.update(info);
         
+        var cda = null;
         if (env.ready()) {
-            var cda = cdaCalc.update(env.getTime(), 
+            cda = cdaCalc.update(env.getTime(), 
                                     env.getPower(),
                                     env.getAltitude(),
                                     env.getGroundSpeed(),
@@ -34,18 +35,14 @@ class LiveCdaView extends WatchUi.SimpleDataField
                                     env.getDistance(),
                                     env.getPressure(),
                                     env.getTemperature());
-
-
-            if (cda != null) {
-                cdaField.setData(cda);
-                return cda;
-            } else {
-                return "--";
-            }
-        } else {
-            return "--";
         }
-        
+
+        if (cda != null) {
+            cdaField.setData(cda);
+            return cda;
+        }
+
+        return "---";
     }
 }
 

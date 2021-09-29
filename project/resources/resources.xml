@@ -1,4 +1,22 @@
 <resources>
-	<string id="AppName">CdaMeter</string>
+	<string id="AppName">CdAMeter</string>
+	<string id="fieldTitle">Calculated CdA</string>
+	<string id="fieldLabel">CdA</string>
+	<string id="fieldUnit">m^2</string>
+
 	<bitmap id="LauncherIcon" filename="test.png" />
+
+	<fitContributions>
+		<fitField 
+			id="0" 
+			displayInChart="true" 
+			sortOrder = "0" 
+			precision="2"
+			chartTitle="@Strings.fieldTitle"
+			dataLabel="@Strings.fieldLabel"
+			unitLabel="@Strings.fieldUnit"
+			fillColor="#FF0000"
+		/>
+	</fitContributions>
 </resources>
+

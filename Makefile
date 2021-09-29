@@ -8,10 +8,12 @@ DOCKER_ARGS=-e DISPLAY=${DISPLAY} -v /tmp/.X11-unix:/tmp/.X11-unix \
     --mount type=bind,source=$(shell pwd)/$(PROJECT_DIR),target=/home/developer/project
 RUN_IN_CONTAINER=$(DOCKER) exec $(CONTAINER_NAME) /entrypoint.sh
 
+DEVICE=edge130
+TARGET=CdaMeter
 
 .SECONDARY:
 
-all: project/CdaMeter
+all: project/$(TARGET)
 
 container-build:
 	$(DOCKER) build -t $(IMAGE_NAME) .
@@ -31,7 +33,6 @@ container-clean:
 simulator:
 	$(DOCKER) run --rm -it $(DOCKER_ARGS) --name $(CONTAINER_NAME) $(IMAGE_NAME) /entrypoint.sh connectiq
 
-DEVICE=edge130
 
 %.der:
 	openssl genrsa -out $*.pem 4096
@@ -42,3 +43,6 @@ DEVICE=edge130
 
 %: %.prg
 	$(RUN_IN_CONTAINER) monkeydo $< $(DEVICE)
+
+deploy: project/$(TARGET).prg
+	cp $< /media/paul/GARMIN/GARMIN/APPS
