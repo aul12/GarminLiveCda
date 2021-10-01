@@ -9,7 +9,7 @@ DOCKER_ARGS=-e DISPLAY=${DISPLAY} -v /tmp/.X11-unix:/tmp/.X11-unix \
 RUN_IN_CONTAINER=$(DOCKER) exec $(CONTAINER_NAME) /entrypoint.sh
 
 DEVICE=edge130
-TARGET=CdaMeter
+TARGET=CdAMeter
 
 .SECONDARY:
 
@@ -49,3 +49,5 @@ simulator:
 
 deploy: project/$(TARGET).prg
 	cp $< /media/paul/GARMIN/GARMIN/APPS
+
+release: project/$(TARGET).iq

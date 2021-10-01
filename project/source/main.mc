@@ -4,33 +4,40 @@ using Toybox.System;
 using Toybox.FitContributor;
 
 
-class LiveCdaView extends WatchUi.SimpleDataField
+class LiveCdAView extends WatchUi.SimpleDataField
 {
-    private var cdaCalc;
+    private var cdACalc;
     private var env = new EnvironmentCollector();
-    var cdaField = null;
+    var liveCdAField, averageCdAField = null;
 
     function initialize() {
         SimpleDataField.initialize();
-        self.label = "Cda";
+        self.label = "CdA";
 
-        cdaField = createField(
-            self.label,
+        liveCdAField = createField(
+            "CdA",
             0,
             FitContributor.DATA_TYPE_FLOAT,
             {:mesgType=>FitContributor.MESG_TYPE_RECORD, :units=>"m^2"}
         );
 
+        liveCdAField = createField(
+            "Lap CdA",
+            1,
+            FitContributor.DATA_TYPE_FLOAT,
+            {:mesgType=>FitContributor.MESG_TYPE_LAP, :units=>"m^2"}
+        );
+
         var app = Application.getApp();
-        cdaCalc = new CdaCalc(app.getProperty("crr"), app.getProperty("mass"));
+        cdACalc = new CdACalc(app.getProperty("crr"), app.getProperty("mass"));
     }
 
     function compute(info) {
         env.update(info);
         
-        var cda = null;
+        var cdA = null;
         if (env.ready()) {
-            cda = cdaCalc.update(env.getTime(), 
+            cdA = cdACalc.update(env.getTime(), 
                                     env.getPower(),
                                     env.getAltitude(),
                                     env.getGroundSpeed(),
@@ -40,24 +47,27 @@ class LiveCdaView extends WatchUi.SimpleDataField
                                     env.getTemperature());
         }
 
-        if (cda != null) {
-            cdaField.setData(cda);
-            return cda;
+        if (cdA != null) {
+            liveCdAField.setData(cdA);
+            return cdA;
         }
 
         return "---";
+    }
+
+    function onTimerLap() {
+        System.println("Lap");
     }
 }
 
 class Main extends Application.AppBase
 {
     function initialize() {
-        var app = Application.getApp();
-        //app.setProperty("crr",  0.002845);
-        //app.setProperty("mass",  60+10);
+        setProperty("crr",  0.002845);
+        setProperty("mass",  60+10);
 
     }
     function getInitialView() {
-        return [new LiveCdaView()];
+        return [new LiveCdAView()];
     }
 }

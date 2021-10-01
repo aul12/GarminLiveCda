@@ -1,6 +1,6 @@
 using Toybox.System;
 
-class CdaCalc {
+class CdACalc {
     private var lastTime = null;
     private var lastAltitude = null;
     private var lastGroundSpeed = null;
@@ -12,7 +12,7 @@ class CdaCalc {
     private const R_specific = 287.058; // https://en.wikipedia.org/wiki/Density_of_air
 
     private var speedAltitudeFilter = new SpeedAltitudeFilter(0.0001, 0.00005, 1, 1);
-    private var cdaFilter = new ExponentialSmoothing(0.9);
+    private var cdAFilter = new ExponentialSmoothing(0.9);
 
     function initialize(CRR, M) {
         self.CRR = CRR;
@@ -29,7 +29,7 @@ class CdaCalc {
 
         var dt = time - lastTime;
         if (dt <= 0) {
-            return cdaFilter.get();
+            return null;
         }
 
         speedAltitudeFilter.update(groundSpeed, altitude, dt);
@@ -52,10 +52,10 @@ class CdaCalc {
         if (groundSpeed != 0 && dDistance != 0) {
             var dragForce = dragEnergy / dDistance;
             var rho_air = pressure / (R_specific * temperature);
-            var cda = 2 * dragForce / (rho_air * airSpeed * airSpeed);
-            System.println("cda: " + cda);
-            if (cda > 0) {
-                cdaFilter.update(cda);
+            var cdA = 2 * dragForce / (rho_air * airSpeed * airSpeed);
+            System.println("CdA: " + cdA);
+            if (cdA > 0) {
+                cdAFilter.update(cdA);
             } else {
                 System.println("CdA negative, ignoring!");
             }
@@ -69,10 +69,6 @@ class CdaCalc {
         lastGroundSpeed = groundSpeed;
         lastDistance = distance;
 
-        return cdaFilter.get();
-    }
-
-    function getCda() {
-        return cdaFilter.get();
+        return cdAFilter.get();
     }
 }
