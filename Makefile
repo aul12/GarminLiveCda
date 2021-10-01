@@ -8,7 +8,7 @@ DOCKER_ARGS=-e DISPLAY=${DISPLAY} -v /tmp/.X11-unix:/tmp/.X11-unix \
     --mount type=bind,source=$(shell pwd)/$(PROJECT_DIR),target=/home/developer/project
 RUN_IN_CONTAINER=$(DOCKER) exec $(CONTAINER_NAME) /entrypoint.sh
 
-DEVICE=edge130
+DEVICE=fr735xt
 TARGET=CdAMeter
 
 .SECONDARY:
@@ -45,9 +45,14 @@ simulator:
 	$(RUN_IN_CONTAINER) monkeyc --package-app -d $(DEVICE) -f $< -o $@ -y $*.der
 
 %: %.prg
-	$(RUN_IN_CONTAINER) monkeydo $< $(DEVICE)
+	$(RUN_IN_CONTAINER) monkeydo $< $(DEVICE)	
 
 deploy: project/$(TARGET).prg
-	cp $< /media/paul/GARMIN/GARMIN/APPS
+	sudo mkdir -p /media/paul/GARMIN 
+	sudo mount /dev/sda /media/paul/GARMIN 
+	sudo cp $< /media/paul/GARMIN/GARMIN/APPS
+	sync
+	sudo umount /media/paul/GARMIN
+	sudo rm -r /media/paul/GARMIN
 
 release: project/$(TARGET).iq

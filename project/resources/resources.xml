@@ -1,4 +1,29 @@
 <resources>
+	<properties>
+		<property id="CRR" type="float">0.002845</property>
+		<property id="MASS" type="float">70</property>
+	</properties>
+
+	<settings>
+
+	<setting propertyKey="@Properties.CRR" title="@Strings.settingCRR">
+			<settingConfig
+				type="numeric"
+				min="0"
+				max="1">
+			</settingConfig>
+		</setting>
+		<setting propertyKey="@Properties.MASS" title="@Strings.settingMass">
+			<settingConfig
+				type="numeric"
+				min="0"
+				max="200"
+			/>
+		</setting>
+	</settings>
+
+
+
 	<string id="AppName">CdAMeter</string>
 	<string id="fieldTitle">Calculated CdA</string>
 	<string id="fieldLabel">CdA</string>
@@ -30,23 +55,5 @@
 			fillColor="#FF0000"
 		/>
 	</fitContributions>
-
-	<settings>
-		<setting propertyKey="@Properties.crr" title="@Strings.settingCRR">
-			<settingConfig
-				type="numeric"
-				min="0"
-				max="1"
-			/>
-		</setting>
-
-		<setting propertyKey="@Properties.mass" title="@Strings.settingMass">
-			<settingConfig
-				type="numeric"
-				min="0"
-				max="200"
-			/>
-		</setting>
-	</settings>
 </resources>
 

@@ -30,7 +30,7 @@ class LiveCdAView extends WatchUi.SimpleDataField
         );
 
         var app = Application.getApp();
-        cdACalc = new CdACalc(app.getProperty("crr"), app.getProperty("mass"));
+        cdACalc = new CdACalc(app.getProperty("CRR"), app.getProperty("MASS"));
     }
 
     function compute(info) {
@@ -66,11 +66,6 @@ class LiveCdAView extends WatchUi.SimpleDataField
 
 class Main extends Application.AppBase
 {
-    function initialize() {
-        setProperty("crr",  0.002845);
-        setProperty("mass",  60+10);
-
-    }
     function getInitialView() {
         return [new LiveCdAView()];
     }

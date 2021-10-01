@@ -5,5 +5,5 @@ container-home
 .vscode/launch.json
 .vscode/settings.json
 .vscode/targets.log
-project/*fit_contributions.json
+project/*.json
 project/*.iq
