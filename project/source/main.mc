@@ -8,6 +8,7 @@ class LiveCdAView extends WatchUi.SimpleDataField
 {
     private var cdACalc;
     private var env = new EnvironmentCollector();
+    private var cdAAverager = new Averager();
     var liveCdAField, averageCdAField = null;
 
     function initialize() {
@@ -21,7 +22,7 @@ class LiveCdAView extends WatchUi.SimpleDataField
             {:mesgType=>FitContributor.MESG_TYPE_RECORD, :units=>"m^2"}
         );
 
-        liveCdAField = createField(
+        averageCdAField = createField(
             "Lap CdA",
             1,
             FitContributor.DATA_TYPE_FLOAT,
@@ -48,7 +49,10 @@ class LiveCdAView extends WatchUi.SimpleDataField
         }
 
         if (cdA != null) {
+            cdAAverager.update(cdA);
+
             liveCdAField.setData(cdA);
+            averageCdAField.setData(cdA);
             return cdA;
         }
 
@@ -56,7 +60,7 @@ class LiveCdAView extends WatchUi.SimpleDataField
     }
 
     function onTimerLap() {
-        System.println("Lap");
+        cdAAverager.reset();
     }
 }
 

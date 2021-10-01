@@ -21,7 +21,7 @@
 		/>
 		<fitField 
 			id="1" 
-			displayInChart="false" 
+			displayInChart="true" 
 			sortOrder = "0" 
 			precision="2"
 			chartTitle="@Strings.fieldTitle"
